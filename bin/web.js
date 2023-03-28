@@ -2,17 +2,18 @@ var _ = require('underscore');
 var express = require('express');
 var http = require('http');
 var logger = require('winston');
-var opt = require('optimist');
 var path = require('path');
+var  yargs = require('yargs/yargs')
+var { hideBin } = require('yargs/helpers')
 
-var argv = require('optimist')
-	.describe('config', 'Location of the configuration file').default('config', './config.json')
-	.argv;
-
-if (argv.h || argv.help) {
-	opt.showHelp();
-	return;
-}
+const argv = yargs(hideBin(process.argv)
+).options({
+	'config': {
+	  type: 'string',
+	  describe: 'Location of the configuration file',
+	  default: './config.json'
+	}
+}).alias('h', 'help').argv;
 
 logger.cli();
 logger.level = 'debug';

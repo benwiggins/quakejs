@@ -1,24 +1,26 @@
 var _ = require('underscore');
 var async = require('async');
+var compression = require('compression');
 var crc32 = require('buffer-crc32');
 var express = require('express');
 var fs = require('fs');
 var http = require('http');
 var logger = require('winston');
-var opt = require('optimist');
 var path = require('path');
 var send = require('send');
 var wrench = require('wrench');
 var zlib = require('zlib');
+var  yargs = require('yargs/yargs')
+var { hideBin } = require('yargs/helpers')
 
-var argv = require('optimist')
-	.describe('config', 'Location of the configuration file').default('config', './config.json')
-	.argv;
-
-if (argv.h || argv.help) {
-	opt.showHelp();
-	return;
-}
+const argv = yargs(hideBin(process.argv)
+).options({
+	'config': {
+	  type: 'string',
+	  describe: 'Location of the configuration file',
+	  default: './config.json'
+	}
+}).alias('h', 'help').argv;
 
 logger.cli();
 logger.level = 'debug';
@@ -150,7 +152,7 @@ function loadConfig(configPath) {
 		res.setHeader('Access-Control-Allow-Origin', '*');
 		next();
 	});
-	app.use(express.compress({ filter: function(req, res) { return true; } }));
+	app.use(compression());
 	app.get('/assets/manifest.json', handleManifest);
 	app.get(/^\/assets\/(.+\/|)(\d+)-(.+?)$/, handleAsset);
 

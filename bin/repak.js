@@ -4,7 +4,7 @@ var fs = require('fs');
 var logger = require('winston');
 var path = require('path');
 var exec = require('child_process').exec;
-var execSync = require('execSync').exec;
+var { execSync } = require("child_process");
 var os = require('os');
 var temp = require('temp');
 var wrench = require('wrench');
@@ -38,26 +38,27 @@ var whitelist = [
 logger.cli();
 logger.level = 'debug';
 
-var argv = require('optimist')
-	.options({
-		'config': {
-			'description': 'Repak asset config script',
-			'default': path.join(__dirname, 'repak-config.json')
-		},
-		'src': {
-			'description': 'Source directory'
-		},
-		'dest': {
-			'description': 'Destination directory'
-		}
-	})
-	.demand(['src', 'dest'])
-	.argv;
+var  yargs = require('yargs/yargs')
+var { hideBin } = require('yargs/helpers')
 
-if (argv.h || argv.help) {
-	opt.showHelp();
-	return;
-}
+const argv = yargs(hideBin(process.argv)
+).options({
+	'config': {
+	  type: 'string',
+	  describe: 'Repak asset config script',
+	  default: path.join(__dirname, 'repak-config.json')
+	},
+	'src': {
+		type: 'string',
+		describe: 'Source directory',
+		demandOption: true,
+	},
+	'dest': {
+		type: 'string',
+		describe: 'Destination directory',
+		demandOption: true
+	}
+}).alias('h', 'help').argv;
 
 var src = argv.src;
 var dest = argv.dest;
